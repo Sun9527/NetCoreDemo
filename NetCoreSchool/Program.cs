@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NetCoreSchool.Ef;
 
 namespace NetCoreSchool
 {
@@ -14,7 +16,28 @@ namespace NetCoreSchool
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            //BuildWebHost(args).Run();
+
+            var host = BuildWebHost(args);
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var context = services.GetRequiredService<NetCoreSchoolDbContext>();
+                    DbInitializer.Initialize(context);
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetService<ILogger<Program>>();
+
+                    logger.LogError("报错了+"+ex.Message);
+                }
+            }
+
+            host.Run();
+
+
         }
 
         public static IWebHost BuildWebHost(string[] args) =>
