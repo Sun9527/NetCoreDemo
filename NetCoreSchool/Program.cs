@@ -24,8 +24,10 @@ namespace NetCoreSchool
                 var services = scope.ServiceProvider;
                 try
                 {
+                     
                     var context = services.GetRequiredService<NetCoreSchoolDbContext>();
-                    DbInitializer.Initialize(context);
+                    DbInit.Initialize(context);
+
                 }
                 catch (Exception ex)
                 {
